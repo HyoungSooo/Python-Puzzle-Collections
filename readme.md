@@ -15,7 +15,7 @@
 in terminal
 
 ```shell
-python base.py 7 10
+python base.py 8 10
 ```
 
 * first argument (7) is size of the puzzle
