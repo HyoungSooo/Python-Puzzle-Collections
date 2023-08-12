@@ -6,6 +6,7 @@
 
 * It doesn't matter if there are more than three in a row diagonally.
 
+* The O's and X's in each row and column are no more than half the size of the puzzle.
 
 #### How to use
 
