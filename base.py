@@ -1,5 +1,5 @@
 import random
-from itertools import combinations
+from collections import Counter
 import time
 import copy
 import sys
@@ -21,27 +21,38 @@ class TicTacLogic:
 
     def __check_input(self):
         if self.cell < 5:
-            raise ValueError('cell is must be more then five')
+            raise ValueError('cell must be more then five')
 
         if self.blank > self.cell ** 2:
             raise ValueError('blank must be smaller than cell ** 2')
+
+        if self.cell % 2 != 0:
+            raise ValueError('cell must be a even number')
 
     def __create_map_base_cell(self):
         self.map = [[0 for _ in range(self.cell)] for _ in range(self.cell)]
 
     def __create_puzzle(self):
-        symbols = ['X', 'O']
-        for row in range(self.cell):
-            for col in range(self.cell):
-                remaining_symbols = symbols.copy()
-                while True:
-                    if not remaining_symbols:
-                        break
-                    symbol = random.choice(remaining_symbols)
-                    if not self.__check_validations(row, col, symbol):
-                        self.map[row][col] = symbol
-                        break
-                    remaining_symbols.remove(symbol)
+        def run():
+            symbols = ['X', 'O']
+            for row in range(self.cell):
+                for col in range(self.cell):
+                    remaining_symbols = symbols.copy()
+                    while True:
+                        if not remaining_symbols:
+                            return False
+                        symbol = random.choice(remaining_symbols)
+                        if not self.__check_validations(row, col, symbol):
+                            self.map[row][col] = symbol
+                            break
+                        remaining_symbols.remove(symbol)
+            return True
+        while True:
+            t = run()
+            if t:
+                break
+            else:
+                self.__create_map_base_cell()
 
         self.__create_blank()
         return self.map
@@ -55,8 +66,14 @@ class TicTacLogic:
             [(1, 0), (2, 0)],
             [(-1, 0), (-2, 0)],
         ]
-
         self.map[row][col] = symbol
+        col_counter = Counter([self.map[i][col] for i in range(self.cell)])
+
+        row_symbol = Counter(self.map[row])
+
+        if col_counter[symbol] > self.cell // 2 or row_symbol[symbol] > self.cell // 2:
+            self.map[row][col] = 0
+            return True
 
         position_list = []
 
